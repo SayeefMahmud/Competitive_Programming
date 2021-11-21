@@ -1,0 +1,37 @@
+string arr, pat;
+
+void getlps(int lps[], int patlen){
+	int i=1, j=0;
+	lps[0]=0;
+	while(i<patlen){
+		if(pat[i]==pat[j]){
+			j++;
+			lps[i++]=j;
+		}
+		else{
+			if(!j) lps[i++]=0;
+			else j=lps[j-1];
+		}
+	}
+}
+
+int main()
+{
+    fastio;
+    cin>>pat>>arr;
+    int patlen=pat.size(), lps[patlen];
+    getlps(lps, patlen);
+    int n=arr.size(), j=0, i=0, ans=0;
+    while(i<n){
+    	if(arr[i]==pat[j]){
+    		j++, i++;
+    		if(j==patlen) ans++, j=lps[j-1];
+    	}
+    	else if(i<n && arr[i]!=pat[j]){
+    		if(!j) i++;
+    		else j=lps[j-1];
+    	}
+    }
+    cout<<ans<<nl;
+    return 0;
+}

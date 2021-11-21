@@ -1,0 +1,55 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000007
+#define inf (1LL<<62)
+#define inff (1<<30)
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL)
+
+ll dp[2100000][23], n, arr[22][22];
+
+ll solve(ll in, ll mask){
+	if(in==n) return 1;
+	if(dp[mask][in]!=-1) return dp[mask][in];
+	ll res=0, call=0;
+	for(int i=0; i<n; i++){
+		if(((1<<i)&mask) == 0){
+			if(arr[in][i]==1){
+				call++;
+				res=(res+solve(in+1, (mask|(1<<i)))%mod)%mod;
+			}
+		}
+	}
+	if(!call) res=0;
+	return dp[mask][in]=res;
+}
+
+int main()
+{
+	fastio;
+    cin>>n;
+    fr(n){
+    	frj(n){
+    		cin>>arr[i][j];
+    	}
+    }
+    memset(dp, -1, sizeof dp);
+    ll ans=solve(0LL,0LL);
+    cout<<ans<<nl;
+    return 0;
+}

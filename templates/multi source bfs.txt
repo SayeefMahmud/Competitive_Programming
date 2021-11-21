@@ -1,0 +1,76 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000007
+#define inf (1LL<<62)
+#define inff (1<<30)
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL)
+
+vector<ll>g[400005];
+ll vis[400005], lev[400005], deg[400005];
+
+int main()
+{
+    fastio;
+    int t, cnt=1;
+    cin>>t;
+    while(t--){
+        ll n, k;
+        cin>>n>>k;
+        fr(n+5){
+            g[i].clear();
+            lev[i]=inf;
+            vis[i]=0;
+        }
+        fr(n-1){
+            ll a, b;
+            cin>>a>>b;
+            g[a].pb(b);
+            g[b].pb(a);
+        }
+        queue<ll>q;
+        fro(n+1){
+            deg[i]=g[i].size();
+            if(deg[i]<=1){
+                vis[i]=1;
+                lev[i]=1;
+                q.push(i);
+            }
+        }
+        while(!q.empty()){
+            ll node=q.front();
+            q.pop();
+            for(ll a : g[node]){
+                if(!vis[a]){
+                    deg[a]--;
+                    if(deg[a]<=1){
+                        vis[a]=1;
+                        lev[a]=lev[node]+1;
+                        q.push(a);
+                    }
+                }
+            }
+        }
+        ll c=0;
+        fro(n+1){
+            if(lev[i]>k) c++;
+        }
+        cout<<c<<nl;
+    }
+    return 0;
+}

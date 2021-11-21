@@ -1,0 +1,13 @@
+	for(int i=2; i<=200000; i++){
+		if(!nprime[i]){
+			pf[i].pb(i);
+			for(int j=i+i; j<=200000; j+=i){
+				nprime[j]=1;
+				int jc=j;
+				while(jc%i==0){
+					pf[j].pb(i);
+					jc/=i;
+				}
+			}
+	    }
+	}

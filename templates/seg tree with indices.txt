@@ -1,0 +1,90 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000007
+#define inf (1LL<<62)
+#define inff (1<<30)
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL)
+
+#define mxn 100005
+
+ll n, arr[mxn], seg[mxn*4], mxin[mxn*4];
+
+void build(ll node, ll st, ll en){
+    if(st==en){
+        seg[node]=arr[st];
+        mxin[node]=st;
+        return;
+    }
+    ll mid = (st+en)/2;
+    build(2*node, st, mid);
+    build(2*node+1, mid+1, en);
+    if(seg[node*2]>=seg[node*2+1]) seg[node]=seg[node*2], mxin[node]=mxin[2*node];
+    else seg[node]=seg[node*2+1], mxin[node]=mxin[2*node+1];
+    return;
+}
+
+pair<ll,ll> query(ll node, ll st, ll en, ll l, ll r){
+    if(st>=l && en<=r) return {seg[node],mxin[node]};
+    if(st>r orr en<l) return {LLONG_MIN,mxin[node]};
+    ll mid=(st+en)/2;
+    pair<ll,ll> ans;
+    pair<ll,ll>left=query(2*node,st,mid,l,r);
+    pair<ll,ll>right=query(2*node+1,mid+1,en,l,r);
+    if(left.ff>=right.ff) return left;
+    return right;
+}
+
+void update(ll node, ll st, ll en, ll tar, ll val){
+    if(st==en){
+        seg[node]=val;
+        arr[st]=val;
+        return;
+    }
+    ll mid=(st+en)/2;
+    if(tar<=mid) update(2*node,st,mid,tar,val);
+    else update(2*node+1,mid+1,en,tar,val);
+    if(seg[node*2]>=seg[node*2+1]) seg[node]=seg[node*2], mxin[node]=mxin[2*node];
+    else seg[node]=seg[node*2+1], mxin[node]=mxin[2*node+1];
+    return;
+}
+
+int main()
+{
+    cin>>n;
+    fr(n) cin>>arr[i];
+    build(1,0,n-1);
+    ll q;
+    cin>>q;
+    while(q--){
+        char c;
+        ll a, b;
+        cin>>c>>a>>b;
+        if(c=='U'){
+            update(1,0,n-1,a-1,b);
+        }
+        else{
+            pair<ll,ll> val1=query(1,0,n-1,a-1,b-1);
+            update(1,0,n-1,val1.ss,-inf);
+            pair<ll,ll>val2=query(1,0,n-1,a-1,b-1);
+            update(1,0,n-1,val1.ss,val1.ff);
+            cout<<val1.ff+val2.ff<<nl;
+        }
+    }
+    return 0;
+}

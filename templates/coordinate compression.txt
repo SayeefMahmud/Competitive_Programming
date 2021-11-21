@@ -1,0 +1,55 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000007
+#define inf (1LL<<62)
+#define inff (1<<30)
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL)
+
+ll n, b[1000005]={}, b2[1000005]={}, arr[1000005];
+pair<ll,ll>x[1000005];
+
+void update(ll bit[], ll in, ll val){
+    for(; in<=n; in+=in&-in) bit[in]+=val;
+}
+
+ll query(ll bit[], ll in){
+    ll res=0;
+    for(; in>0; in-=in&-in) res+=bit[in];
+    return res;
+}
+
+int main()
+{
+    fastio;
+    cin>>n;
+    fr(n) cin>>x[i].ff, x[i].ss=i;
+    sort(x,x+n);
+    fr(n) arr[x[i].ss]=i+1;
+    fr(n) update(b,arr[i],1);
+    ll ans=0;
+    fr(n){
+        ll aa=query(b,arr[i]-1);
+        ll bb=query(b2,n)-query(b2,arr[i]);
+        ans+=aa*bb;
+        update(b,arr[i],-1);
+        update(b2,arr[i],1);
+    }
+    cout<<ans<<nl;
+    return 0;
+}

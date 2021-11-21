@@ -1,0 +1,50 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000007
+#define inf (1LL<<62)
+#define inff (1<<30)
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL)
+
+int main()
+{
+	fastio;
+    ll n, k;
+    cin>>n>>k;
+    ll arr[n];
+    fr(n) cin>>arr[i];
+    ll dp[100005]={};
+    dp[0]=1;
+    for(int i=0; i<n; i++){
+    	vector<ll>pref(k+5,0);
+    	for(int j=k; j>=0; j--){
+    		ll L=j+1, R=j+min(arr[i],k-j);
+    		if(L<=R){
+	    		pref[L]=(pref[L]%mod+dp[j]%mod)%mod;
+	    		if(R+1<=k) pref[R+1]=(pref[R+1]%mod-dp[j]%mod+mod)%mod;
+	    	}
+       	}
+    	ll sum=0;
+    	for(int j=0; j<=k; j++){
+    		sum=(sum+pref[j]%mod)%mod;
+    		dp[j]=(dp[j]%mod+sum)%mod;
+    	}
+    }
+    cout<<dp[k]<<nl;
+    return 0;
+}

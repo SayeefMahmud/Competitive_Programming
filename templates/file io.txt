@@ -1,0 +1,38 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define orr ||
+#define nl printf("\n")
+#define sci(n) scanf("%lld ", &n)
+#define scl(n) scanf("%lld", &n)
+#define pri(n) printf("%d", n)
+#define prl(n) printf("%lld", n)
+#define prc(n) printf("%c", n)
+#define prs printf(" ")
+#define yes cout<<"YES"<<endl
+#define no cout<<"NO"<<endl
+#define inp freopen("input.txt", "r", stdin)
+#define outp freopen("output.txt", "w", stdout)
+#define debug(arr,n) for(int i=0; i<n; i++) printf("%lld ", arr[i])
+#define debugr(arr,s,e) for(int i=s; i<=e; i++) printf("%lld ", arr[i])
+
+ll arr[300000];
+
+int main()
+{
+    ifstream inFile;
+    ofstream outFile;
+    inFile.open("C:/Users/Tonmoy/Downloads/sort.in", ios::in);
+    outFile.open("C:/Users/Tonmoy/Downloads/out.txt", ios::out);
+    ll n;
+    inFile>>n;
+    fr(n) inFile>>arr[i];
+    sort(arr,arr+n);
+    fr(n) outFile<<arr[i]<<" ";
+    return 0;
+}

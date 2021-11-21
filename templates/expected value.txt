@@ -1,0 +1,66 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000007
+#define inf (1LL<<62)
+#define inff (1<<30)
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL)
+
+double dp[305][305][305];
+ll n;
+
+double solve(ll ones, ll twos, ll threes){
+	if(ones==0 && twos==0 && threes==0) return 0;
+	if(dp[ones][twos][threes]!=-1) return dp[ones][twos][threes];
+	double res=0;
+	if(ones>0){
+		res+=((ones*1.0)/n)*(1+solve(ones-1,twos,threes));
+	}
+	if(twos>0){
+		res+=((twos*1.0)/n)*(1+solve(ones+1,twos-1,threes));
+	}
+	if(threes>0){
+		res+=((threes*1.0)/n)*(1+solve(ones,twos+1,threes-1));
+	}
+	res+=((n-(ones+twos+threes))*1.0)/n;
+	res/=1.0-((n-(ones+twos+threes))*1.0)/n;
+	return dp[ones][twos][threes]=res;
+}
+
+int main()
+{
+	fastio;
+    cin>>n;
+    ll arr[3]={};
+    fr(n){
+    	ll a;
+    	cin>>a;
+    	arr[--a]++;
+    }
+    memset(dp, -1, sizeof dp);
+    fr(305){
+    	frj(305){
+    		for(int k=0; k<305; k++){
+    			dp[i][j][k]=-1;
+    		}
+    	}
+    }
+    double ans = solve(arr[0],arr[1],arr[2]);
+    cout<<setprecision(10)<<fixed<<ans<<nl;
+    return 0;
+}

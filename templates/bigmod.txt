@@ -1,0 +1,11 @@
+ll bigmod(ll b, ll p, ll m){
+    b%=m;
+    if(!p) return 1;
+    if(p&1^1){
+        ll temp=bigmod(b,p/2,m);
+        return (temp*temp)%m;
+    }
+    else{
+        return (bigmod(b,p-1,m)*b%m)%m;
+    }
+}

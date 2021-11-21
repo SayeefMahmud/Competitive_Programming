@@ -1,0 +1,38 @@
+#include<iostream>
+#include<cmath>
+#include<algorithm>
+using namespace std;
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define orr ||
+#define nl \n
+#define sci(n) scanf("%lld ", &n)
+#define pri(n) printf("%d", n)
+#define prl(n) printf("%lld", n)
+#define yes cout<<"YES"<<endl
+#define no cout<<"NO"<<endl
+
+
+
+int main()
+{
+    ll n;
+    cin>>n;
+    ll arr[n];
+    fr(n) cin>>arr[i];
+    sort(arr,arr+n);
+    ll number;
+    cin>>number;
+    ll high=n-1, low=0, mid;
+    while(low<high){
+        mid=(high+low)/2;
+        if(arr[mid]==number) break;
+        else if(arr[mid]>number) low=mid+1;
+        else if(arr[mid]<number) high=mid-1;
+    }
+    cout<<mid<<endl;
+    return 0;
+}

@@ -1,0 +1,80 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000007
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL)
+
+stack<int>s;
+int vis[100005]={}, cmp[100005]={}, cnt=-1;
+vector<int>g[100005],grev[100005];
+
+void dfs(int node){
+    if(vis[node]) return;
+    vis[node]=1;
+    for(int next : g[node]){
+        dfs(next);
+    }
+    s.push(node);
+    return;
+}
+
+void ndfs(int node){
+    if(vis[node]) return;
+    cmp[node]=cnt;
+    vis[node]=1;
+    for(int next : grev[node]){
+        ndfs(next);
+    }
+    return;
+}
+
+int main()
+{
+    fastio;
+    ll n, m;
+    cin>>n>>m;
+    fr(m){
+        int a, b;
+        cin>>a>>b;
+        g[a].pb(b);
+        grev[b].pb(a);
+    }
+    fr(n){
+        dfs(i);
+    }
+    memset(vis,0,sizeof(vis));
+    while(!s.empty()){
+        int top=s.top();
+        s.pop();
+        if(!vis[top]){
+            cnt++;
+            ndfs(top);
+        }
+    }
+    int l;
+    cin>>l;
+    fr(l){
+        int a, b, flag=1;
+        cin>>a>>b;
+        if(cmp[a]!=cmp[b]) flag=0;
+        if(flag) cout<<"Legal"<<nl;
+        else cout<<"Illegal"<<nl;
+    }
+    
+    return 0;
+}

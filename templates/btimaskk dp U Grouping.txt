@@ -1,0 +1,64 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000007
+#define inf (1LL<<62)
+#define inff (1<<30)
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL)
+
+ll n, arr[16][16], dp[70000], sums[70000]={};
+
+void solve(ll in,vector<ll>&v, ll fixed, ll mask, ll curr){
+    if(in==v.size()){
+        dp[mask]=max(dp[mask],fixed+sums[curr]);
+        return;
+    }
+    solve(in+1,v,fixed,mask,curr);
+    solve(in+1,v,fixed,mask|(1<<v[in]),curr|(1<<v[in]));
+}
+
+int main()
+{
+    fastio;
+    cin>>n;
+    fr(n) frj(n) cin>>arr[i][j];
+    for(int i=0; i<(1<<n); i++){
+        vector<ll>v2;
+        for(int j=0; j<n; j++){
+            if(i&(1<<j)) v2.pb(j);
+        }
+        for(int j=0; j<v2.size(); j++){
+            for(int k=j+1; k<v2.size(); k++){
+                sums[i]+=arr[v2[j]][v2[k]];
+            }
+        }
+    }
+    fr((1<<n)) dp[i]=-inf;
+    dp[0]=0;
+    for(int i=0; i<(1<<n); i++){
+        vector<ll>v;
+        for(int j=0; j<n; j++){
+            if(!(i&(1<<j))){
+                v.pb(j);
+            }
+        }
+        solve(0LL,v,dp[i],i,0LL);
+    }
+    cout<<dp[(1<<n)-1]<<nl;
+    return 0;
+}

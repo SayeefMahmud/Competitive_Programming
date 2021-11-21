@@ -1,0 +1,46 @@
+#define ll long long
+
+class TreeAncestor {
+    vector<ll>g[50005];
+    ll ancestors[50005][20]={}, dep[50005];
+public:
+    void dfs(ll node, ll par){
+        for(ll a : g[node]){
+            if(a!=par){
+                dep[a]=dep[node]+1;
+                dfs(a,node);
+            }
+        }
+    }
+    TreeAncestor(int n, vector<int>& parent) {
+        dep[0]=0;
+        
+        for (int i=1;i<n; i++){
+            g[i].push_back(parent[i]);
+            g[parent[i]].push_back(i);
+        }
+        
+        dfs(0ll,-1ll);
+        
+        for(int i=0; i<n; i++) ancestors[i][0]=parent[i];
+        
+        for(int i=1; i<=17; i++){
+            for(int j=1; j<n; j++){
+                if(dep[j]<(1<<i)) continue;
+                ancestors[j][i]=ancestors[ancestors[j][i-1]][i-1];
+            }
+        }
+    }
+    
+    int getKthAncestor(int node, int k) {
+        if(dep[node]<k) return -1;
+        if(!k) return node;
+        for(int i=0; i<20; i++){
+            if(k&(1<<i)){
+                node=ancestors[node][i];
+            }
+        }
+        return node;
+        
+    }
+};

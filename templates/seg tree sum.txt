@@ -1,0 +1,35 @@
+#define mxn 200005
+
+int n, arr[mxn];
+ll seg[4*mxn];
+
+void build(int node, int st, int en){
+	if(st==en){
+		seg[node]=arr[st];
+		return;
+	}
+	int mid=(st+en)/2;
+	build(2*node,st,mid);
+	build(2*node+1,mid+1,en);
+	seg[node]=seg[2*node]+seg[2*node+1];
+	return;
+}
+
+void update(int node, int st, int en, int tar, int val){
+	if(st==en){
+		seg[node]=arr[tar]=val;
+		return;
+	}
+	int mid=(st+en)/2;
+	if(tar<=mid) update(2*node, st, mid, tar, val);
+	else update(2*node+1, mid+1, en, tar, val);
+	seg[node]=seg[2*node]+seg[2*node+1];
+	return;
+}
+
+ll query(int node, int st, int en, int l, int r){
+	if(st>=l && en<=r) return seg[node];
+	if(en<l orr st>r) return 0;
+	int mid=(st+en)/2;
+	return query(2*node, st, mid, l, r)+query(2*node+1, mid+1, en, l, r);
+}

@@ -1,0 +1,33 @@
+#include<iostream>
+#include<cmath>
+#include<algorithm>
+using namespace std;
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define orr ||
+#define nl \n
+#define sci(n) scanf("%lld ", &n)
+#define pri(n) printf("%d", n)
+#define prl(n) printf("%lld", n)
+#define yes cout<<"YES"<<endl
+#define no cout<<"NO"<<endl
+
+int main()
+{
+    ll input;
+    cin>>input;
+    ll arr[input];
+    fr(input) cin>>arr[i];
+    ll maximum=0, current=0;
+    for(int i=0; i<input; i++){
+        current+=arr[i];
+        if(current>maximum) maximum=current;
+        if(current<0) current=0;
+    }
+    cout<<maximum<<endl;
+
+    return 0;
+}

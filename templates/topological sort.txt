@@ -1,0 +1,84 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000007
+#define inf (1LL<<62)
+#define inff (1<<30)
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL)
+
+vector<ll>g[200005], invg[200005];
+vector<ll>topsort;
+ll f, times[200005], color[200005];
+
+void dfs(ll node){
+    if(!f) return;
+    color[node]=1;
+    for(ll a : g[node]){
+        if(color[a]==1){
+            f=0; return;
+        }
+        else if(!color[a]) dfs(a);
+    }
+    color[node]=2;
+    topsort.pb(node);
+}
+
+int main()
+{
+    fastio;
+    int t, cnt=1;
+    cin>>t;
+    while(t--){
+        ll n;
+        cin>>n;
+        fr(n+5){
+            g[i].clear();
+            invg[i].clear();
+            color[i]=0;
+        }
+        fr(n){
+            ll k;
+            cin>>k;
+            frj(k){
+                ll a;
+                cin>>a;
+                g[a].pb(i+1);
+                invg[i+1].pb(a);
+            }
+        }
+        f=1;
+        topsort.clear();
+        fro(n+1){
+            if(!color[i]) dfs(i);
+        }
+        if(!f) cout<<-1<<nl;
+        else{
+            reverse(topsort.begin(), topsort.end());
+            fr(n+5) times[i]=1;
+            for(ll a : topsort){
+                for(ll b : invg[a]){
+                    times[a]=max(times[a],times[b]+(b>a));
+                }
+            }
+            ll ans=0;
+            fro(n+1) ans=max(ans,times[i]);
+            cout<<ans<<nl;
+        }
+    }
+    return 0;
+}

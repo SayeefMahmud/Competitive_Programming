@@ -1,0 +1,56 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000007
+#define inf (1LL<<62)
+#define inff (1<<30)
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL)
+
+long double v;
+
+long double solve(long double c, long double m, long double p){
+    if(abs(p-1)<1e-7) return 0;
+    long double res=0;
+    if(c<1e-7){
+        long double t1=min(m,v);
+        res=m*(1+solve(c,m-t1,p+t1));
+    }
+    else if(m<1e-7){
+        long double t1=min(c,v);
+        res=c*(1+solve(c-t1,m,p+t1));
+    }
+    else{
+        long double t1=min(c,v), t2=min(m,v);
+        res=c*(1+solve(c-t1,m+t1/2,p+t1/2))+m*(1+solve(c+t2/2,m-t2,p+t2/2));
+    }
+    return res;
+}
+
+int main()
+{
+    fastio;
+    int t, cnt=1;
+    cin>>t;
+    while(t--){
+        long double c, m, p;
+        cin>>c>>m>>p>>v;
+        long double ans=1+solve(c,m,p);
+        cout<<setprecision(10)<<fixed<<ans<<nl;
+    }
+    return 0;
+}

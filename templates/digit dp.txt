@@ -1,0 +1,70 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nll '\n'
+#define nl cout<<'\n'
+#define mod 1000000007
+#define sci(n) scanf("%d", &n)
+#define scl(n) scanf("%lld", &n)
+#define pri(n) printf("%d\n", n)
+#define prl(n) printf("%lld\n", n)
+#define prc(n) printf("%c\n", n)
+#define yes cout<<"YES"<<nll
+#define no cout<<"NO"<<nll
+#define ff first
+#define ss second
+#define inp freopen("input.txt", "r", stdin)
+#define outp freopen("output.txt", "w", stdout)
+#define debug(arr,n) for(int i=0; i<n; i++) cout<<arr[i]<<" "; nl
+#define debugr(arr,s,e) for(int i=s; i<=e; i++) cout<<arr[i]<<" "; nl
+#define debugm(arr,n,m) fr(n){frj(m){cout<<arr[i][j]<<" ";}nl;}
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL)
+
+string a, b, use;
+
+ll dp[11][100][2];
+
+ll solve(ll in, ll n, ll sum, ll flag){
+	if(in==n) return sum;
+	if(dp[in][sum][flag]!=-1) return dp[in][sum][flag];
+	ll limit=9, res=0;
+	if(!flag) limit=use[in]-'0';
+
+	for(int i=0; i<=limit; i++){
+		if(flag orr i<limit) res+=solve(in+1, n , sum+i, 1LL);
+		else res+=solve(in+1, n, sum+i, 0LL);
+	}
+
+	return dp[in][sum][flag]=res;
+}
+
+int main()
+{
+	fastio;
+    while(1){
+    	ll num1;
+    	cin>>num1>>b;
+    	if(num1==-1 && b=="-1") break;
+    	num1--;
+    	stringstream ss;
+    	ss<<num1;
+    	ss>>a;
+        memset(dp,-1,sizeof(dp));
+    	use=a;
+        ll l = solve(0LL, use.size(), 0LL, 0LL);
+        memset(dp,-1,sizeof(dp));
+        use.clear(); use=b;
+        ll r = solve(0LL, use.size(), 0LL, 0LL);
+        cout<<r-l<<nll;
+    }
+    return 0;
+}

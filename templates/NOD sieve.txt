@@ -1,0 +1,5 @@
+for(int i=1; i<1000001; i++){
+		for(int j=i; j<1000001; j+=i){
+			divisors[j]++;
+		}
+	}

@@ -1,0 +1,90 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000000
+#define inf (1LL<<62)
+#define inff (1<<30)
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL)
+
+ll m;
+vector<vector<ll> >id(55,vector<ll>(55));
+
+vector<vector<ll> > mul(vector<vector<ll> >&res, vector<vector<ll> >mat1, vector<vector<ll> >mat2){
+    for(int i=0; i<m; i++){
+        for(int j=0; j<m; j++){
+            for(int k=0; k<m; k++){
+                res[i][j]=(res[i][j]+(mat1[i][k]%mod*mat2[k][j]%mod)%mod)%mod;
+            }
+        }
+    }
+    return res;
+}
+
+vector<vector<ll> > matexpo(vector<vector<ll> >mat, ll p){
+    if(!p) return id;
+    if(p&1){
+        vector<vector<ll> >res(m,vector<ll>(m));
+        mul(res,mat,matexpo(mat,p-1));
+        return res;
+    }
+    else{
+        vector<vector<ll> >res(m,vector<ll>(m));
+        vector<vector<ll> >mat2=matexpo(mat,p/2);
+        mul(res,mat2,mat2);
+        return res;
+    }
+}
+
+int main()
+{
+    fastio;
+    int t, cnt=1;
+    cin>>t;
+    fr(53){
+        frj(53){
+            id[i][j]=(i==j);
+        }
+    }
+    while(t--){
+        ll k;
+        cin>>k;
+        m=k;
+        ll b[k+1], c[k+1];
+        fro(k+1) cin>>b[i];
+        fro(k+1) cin>>c[i];
+        ll n;
+        cin>>n;
+        if(n<=k) cout<<b[n]%mod<<nl;
+        else{
+            vector<vector<ll> >matrix(k,vector<ll>(k));
+            fr(k) matrix[0][i]=c[i+1];
+            fr(k-1){
+                frj(k){
+                    matrix[i+1][j]=(i==j);
+                }
+            }
+            vector<vector<ll> >ans=matexpo(matrix,n-k);
+            ll out=0;
+            fr(k){
+                out=(out+(ans[0][i]%mod*b[k-i]%mod)%mod)%mod;
+            }
+            cout<<out<<nl;
+        }
+    }
+    return 0;
+}

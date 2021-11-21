@@ -1,0 +1,58 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000007
+#define inf (1LL<<62)
+#define inff (1<<30)
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL)
+
+int m1[105][100005];
+
+int main()
+{
+	fastio;
+    int t, cnt=1;
+    cin>>t;
+    while(t--){
+    	ll n, m;
+    	cin>>n>>m;
+    	ll a[n], c[n];
+    	fr(n) cin>>a[i];
+    	fr(n) cin>>c[i];
+    	ll dp[100005];
+    	memset(dp, 0, sizeof dp);
+    	memset(m1, 0, sizeof m1);
+    	dp[0]=1;
+    	for(int i=0; i<n; i++){
+    		for(int j=0; j<=m; j++){
+    			if(j+a[i]>m) break;
+    			if(dp[j] && m1[i][j]<c[i] && !dp[j+a[i]]){
+    				dp[j+a[i]]=1;
+    				m1[i][j+a[i]]+=m1[i][j]+1;
+    			}
+    		}
+    	}
+    	ll ans=0;
+    	for(int i=1; i<=m; i++){
+    		if(dp[i]) ans++;
+    	}
+    	cout<<"Case "<<cnt++<<": ";
+    	cout<<ans<<nl;
+    }
+    return 0;
+}

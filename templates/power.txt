@@ -1,0 +1,5 @@
+ll power(ll a,ll b){
+    ll ans=1;
+    fr(b) ans*=a;
+    return ans;
+}

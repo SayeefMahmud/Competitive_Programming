@@ -1,0 +1,89 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000007
+#define inf (1LL<<62)
+#define inff (1<<30)
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL)
+
+ll n, m, f, val[500005], vis[500005]={}, check[500005]={};
+vector<ll>g[500005];
+pair<ll,ll>arr[500005];
+
+void dfs(ll node, ll valofpar){
+	if(vis[node]){
+		return;
+	}
+	vis[node]=1;
+	set<ll>v{valofpar};
+	for(ll a : g[node]){
+		v.insert(val[a]);
+	}
+	ll mex=1;
+	for(ll a : v){
+		if(a==mex) mex++;
+		else break;
+	}
+	check[node]=mex;
+	for(ll a : g[node]){
+		dfs(a,mex);
+	}
+}
+
+int main()
+{
+	fastio;
+    cin>>n>>m;
+    fr(m){
+    	ll a, b;
+    	cin>>a>>b;
+    	g[a].pb(b);
+    	g[b].pb(a);
+    }
+    fr(n){
+    	cin>>arr[i].ff;
+    	arr[i].ss=i+1;
+    	val[i+1]=arr[i].ff;
+    }
+    sort(arr, arr+n);
+    if(arr[0].ff!=1) cout<<-1<<nl;
+    else{
+    	fro(n+1){
+    		sort(g[i].begin(), g[i].end(), [](ll a, ll b){return val[a]<val[b];});
+    	}
+    	fro(n+1){
+    		if(!vis[i] && val[i]==1){
+		    	check[i]=1, vis[i]=1;
+			    for(ll a : g[i]){
+			    	dfs(a,val[i]);
+			    }
+			}
+		}
+	    f=1;
+	    fro(n+1){
+	    	if(val[i]!=check[i]){
+	    		f=0; break;
+	    	}
+	    }
+	    if(!f) cout<<-1<<nl;
+	    else{
+	    	fr(n) cout<<arr[i].ss<<" "; nll;
+	    }
+	}
+    return 0;
+}

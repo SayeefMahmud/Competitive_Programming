@@ -1,0 +1,72 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000007
+#define inf (1LL<<62)
+#define inff (1<<30)
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL)
+
+ll n, a, b;
+string s, ans;
+ll dp[45][45][45][45];
+
+ll solve(ll in, ll moda, ll modb, ll takea){
+    if(in==n){
+        if(takea==n orr !takea) return inf;
+        if(!moda && !modb) return abs(takea-(n-takea));
+        return inf;
+    }
+    if(dp[in][moda][modb][takea]!=-1) return dp[in][moda][modb][takea];
+    ll res1=solve(in+1,((moda*10+(s[in]-'0')))%a,modb,takea+1);
+    ll res2=solve(in+1,moda,((modb*10+(s[in]-'0')))%b,takea);
+    return dp[in][moda][modb][takea]=min(res1,res2);
+}
+
+void getans(ll in, ll moda, ll modb, ll takea){
+    if(in==n) return;
+    if(solve(in+1,((moda*10+(s[in]-'0')))%a,modb,takea+1)<=
+       solve(in+1,moda,((modb*10+(s[in]-'0')))%b,takea)){
+        ans[in]='R';
+        getans(in+1,((moda*10+(s[in]-'0')))%a,modb,takea+1);
+    }
+    else{
+        ans[in]='B';
+        getans(in+1,moda,((modb*10+(s[in]-'0')))%b,takea);
+    }
+}
+
+int main()
+{
+    fastio;
+    int t, cnt=1;
+        cin>>t;
+        while(t--){
+            cin>>n>>a>>b;
+            cin>>s;
+            memset(dp, -1, sizeof dp);
+            ans="";
+            ans.resize(n);
+            ll tmp=solve(0,0,0,0);
+            if(tmp==inf) cout<<-1<<nl;
+            else{
+                getans(0,0,0,0);
+                cout<<ans<<nl;
+            }
+        }    
+    return 0;
+}

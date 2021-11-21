@@ -1,0 +1,67 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000007
+#define inf (1LL<<62)
+#define inff (1<<30)
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL)
+
+#define pii pair<ll,pair<ll,ll> >
+vector<pair<ll,ll> >g[100005], g2[100005];
+vector<ll>par(100005);
+bool vis[100005]={};
+
+ll prim(ll x){
+    priority_queue<pii, vector<pii>, greater<pii> >q;
+    q.push({0,{1,-1}});
+    ll mincost=0;
+    while(!q.empty()){
+        pair<ll,pair<ll,ll> >element=q.top();
+        q.pop();
+        if(vis[element.ss.ff]) continue;
+        vis[element.ss.ff]=1;
+        if(element.ss.ss!=-1){
+            g2[element.ss.ff].pb({element.ff,element.ss.ss});
+            g2[element.ss.ss].pb({element.ff,element.ss.ff});
+            par[element.ss.ff]=element.ss.ss;
+        }
+        mincost+=element.ff;
+        for(pair<ll,ll> a : g[element.ss.ff]){
+            if(!vis[a.ss]){
+                q.push({a.ff,{a.ss,element.ss.ff}});
+            }
+        }
+    }
+    return mincost;
+}
+
+int main()
+{
+    fastio;
+    ll n, m;
+    cin>>n>>m;
+    fr(m){
+        ll a, b, c;
+        cin>>a>>b>>c;
+        g[a].pb({c,b});
+        g[b].pb({c,a});
+    }
+    ll mincost=prim(1);
+    cout<<mincost<<nl;
+    return 0;
+}

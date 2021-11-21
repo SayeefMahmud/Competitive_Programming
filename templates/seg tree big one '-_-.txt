@@ -1,0 +1,256 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000007
+#define inf (1LL<<62)
+#define inff (1<<30)
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL)
+
+#define mxn 200005
+
+
+#define ts to_string
+string ts(char c) { return string(1, c); } string ts(bool b) { return b ? "true" : "false"; } string ts(const char* s) { return (string)s; } string ts(string s) { return s; }
+template<class A> string ts(complex<A> c) { stringstream ss; ss << c; return ss.str(); } string ts(vector<bool> v) {  string res = "{"; for(int i = 0; i < v.size(); ++i) res += char('0' + v[i]); res += "}"; return res; }
+template<size_t SZ> string ts(bitset<SZ> b) { string res = ""; for(int i = 0; i < SZ; ++i) res += char('0' + b[i]); return res; }
+template<class A, class B> string ts(pair<A,B> p);
+template<class T> string ts(T v) { bool fst = 1; string res = "{"; for (const auto& x: v) { if (!fst) res += ", "; fst = 0; res += ts(x); } res += "}"; return res;}
+template<class A, class B> string ts(pair<A,B> p) { return "(" + ts(p.first) + ", " + ts(p.second) + ")"; } void DBG() { cerr << "]" << endl; }
+template<class H, class... T> void DBG(H h, T... t) { cerr << ts(h); if (sizeof...(t)) cerr << ", "; DBG(t...); } void EDBG(string names) { names = names; }
+template<class H, class... T> void EDBG(string names, H h, T... t) { auto pos = names.find(','); auto first_name = names.substr(0, pos); auto rest = names.substr(pos + 1); while(rest.front() == ' '){ rest = rest.substr(1); } cerr << "   [" << first_name << "]: [" << ts(h) << "]" << endl; EDBG(rest, t...); }
+
+#ifdef dbghere
+#define dbg(...) cerr<<"(Line "<<__LINE__<<")"<<endl, EDBG(#__VA_ARGS__, __VA_ARGS__)
+#else
+#define dbg(...) 0
+#endif
+
+
+ll arr[mxn], n, q, carry;
+
+struct seg{
+    ll left, right, mid, f;
+};
+
+seg segtree[4*mxn];
+
+void build(ll node, ll st, ll en){
+    if(st==en){
+        segtree[node].left=segtree[node].right=segtree[node].f=1;
+        segtree[node].mid=0;
+        return;
+    }
+    ll mid=(st+en)/2;
+    build(2*node, st, mid);
+    build(2*node+1, mid+1, en);
+    ll pref=segtree[2*node].left, suff=segtree[2*node+1].right;
+    ll summid=segtree[2*node].mid+segtree[2*node+1].mid;
+    ll leftf=segtree[2*node].f, rightf=segtree[2*node+1].f;
+    segtree[node].mid=summid;
+    if(leftf && rightf){
+        if(arr[mid]<=arr[mid+1]){
+            segtree[node].f=1;
+            segtree[node].left=segtree[node].right=pref+suff;
+        }
+        else{
+            segtree[node].f=0;
+            segtree[node].left=pref, segtree[node].right=suff;
+        }
+    }
+    if(leftf && !rightf){
+        if(arr[mid]<=arr[mid+1]){
+            segtree[node].f=0;
+            segtree[node].left=pref+segtree[2*node+1].left;
+            segtree[node].right=suff;
+        }
+        else{
+            segtree[node].f=0;
+            segtree[node].mid+=(segtree[2*node+1].left*(segtree[2*node+1].left+1))/2;
+            segtree[node].left=pref, segtree[node].right=suff;
+        }
+    }
+    if(!leftf && rightf){
+        if(arr[mid]<=arr[mid+1]){
+            segtree[node].f=0;
+            segtree[node].left=pref;
+            segtree[node].right=suff+segtree[2*node].right;
+        }
+        else{
+            segtree[node].f=0;
+            segtree[node].mid+=(segtree[2*node].right*(segtree[2*node].right+1))/2;
+            segtree[node].left=pref, segtree[node].right=suff;
+        }
+    }
+    if(!leftf && !rightf){
+        if(arr[mid]<=arr[mid+1]){
+            segtree[node].f=0;
+            ll t1=segtree[2*node].right+segtree[2*node+1].left;
+            segtree[node].mid+=(t1*(t1+1))/2;
+            segtree[node].left=pref;
+            segtree[node].right=suff;
+        }
+        else{
+            segtree[node].f=0;
+            ll t1=segtree[2*node].right, t2=segtree[2*node+1].left;
+            segtree[node].mid+=(t1*(t1+1))/2;
+            segtree[node].mid+=(t2*(t2+1))/2;
+            segtree[node].left=pref, segtree[node].right=suff;
+        }
+    }
+}
+
+void update(ll node, ll st, ll en, ll pos, ll val){
+    if(st==en){
+        arr[pos]=val;
+        return;
+    }
+    ll mid=(st+en)/2;
+    if(pos<=mid) update(2*node,st,mid,pos,val);
+    else update(2*node+1,mid+1,en,pos,val);
+    ll pref=segtree[2*node].left, suff=segtree[2*node+1].right;
+    ll summid=segtree[2*node].mid+segtree[2*node+1].mid;
+    ll leftf=segtree[2*node].f, rightf=segtree[2*node+1].f;
+    segtree[node].mid=summid;
+    if(leftf && rightf){
+        if(arr[mid]<=arr[mid+1]){
+            segtree[node].f=1;
+            segtree[node].left=segtree[node].right=pref+suff;
+        }
+        else{
+            segtree[node].f=0;
+            segtree[node].left=pref, segtree[node].right=suff;
+        }
+    }
+    if(leftf && !rightf){
+        if(arr[mid]<=arr[mid+1]){
+            segtree[node].f=0;
+            segtree[node].left=pref+segtree[2*node+1].left;
+            segtree[node].right=suff;
+        }
+        else{
+            segtree[node].f=0;
+            segtree[node].mid+=(segtree[2*node+1].left*(segtree[2*node+1].left+1))/2;
+            segtree[node].left=pref, segtree[node].right=suff;
+        }
+    }
+    if(!leftf && rightf){
+        if(arr[mid]<=arr[mid+1]){
+            segtree[node].f=0;
+            segtree[node].left=pref;
+            segtree[node].right=suff+segtree[2*node].right;
+        }
+        else{
+            segtree[node].f=0;
+            segtree[node].mid+=(segtree[2*node].right*(segtree[2*node].right+1))/2;
+            segtree[node].left=pref, segtree[node].right=suff;
+        }
+    }
+    if(!leftf && !rightf){
+        if(arr[mid]<=arr[mid+1]){
+            segtree[node].f=0;
+            ll t1=segtree[2*node].right+segtree[2*node+1].left;
+            segtree[node].mid+=(t1*(t1+1))/2;
+            segtree[node].left=pref;
+            segtree[node].right=suff;
+        }
+        else{
+            segtree[node].f=0;
+            ll t1=segtree[2*node].right, t2=segtree[2*node+1].left;
+            segtree[node].mid+=(t1*(t1+1))/2;
+            segtree[node].mid+=(t2*(t2+1))/2;
+            segtree[node].left=pref, segtree[node].right=suff;
+        }
+    }
+}
+
+ll query(ll node, ll st, ll en, ll l, ll r){
+    if(en<l orr st>r) return 0;
+    if(l<=st && r>=en){
+        ll res=0;
+        if(st==l){
+            if(segtree[node].f){
+                carry=segtree[node].left;
+            }
+            else{
+                ll t1=segtree[node].left;
+                res+=(t1*(t1+1))/2;
+                res+=segtree[node].mid;
+                carry=segtree[node].right;
+            }
+        }
+        else{
+            if(arr[st-1]<=arr[st]){
+                if(segtree[node].f){
+                    carry+=segtree[node].left;
+                }
+                else{
+                    carry+=segtree[node].left;
+                    res+=(carry*(carry+1))/2;
+                    ll t1=segtree[node].mid;
+                    res+=t1;
+                    carry=segtree[node].right;
+                }
+            }
+            else{
+                res+=(carry*(carry+1))/2;
+                ll t1=segtree[node].left;
+                if(segtree[node].f){
+                    carry=t1;
+                }
+                else{
+                    res+=(t1*(t1+1))/2;
+                    ll t1=segtree[node].mid;
+                    res+=t1;
+                    carry=segtree[node].right;
+                }
+            }
+        }
+        if(en==r) res+=(carry*(carry+1))/2;
+        return res;
+    }
+    ll mid=(st+en)/2;
+    return query(2*node,st,mid,l,r)+query(2*node+1,mid+1,en,l,r);
+}
+
+int main()
+{
+    fastio;
+    cin>>n>>q;
+    fr(n){
+        cin>>arr[i];
+    }
+    build(1,0,n-1);
+    while(q--){
+        ll tp;
+        cin>>tp;
+        if(tp==1){
+            ll pos, val;
+            cin>>pos>>val;
+            pos--;
+            update(1,0,n-1,pos,val);
+        }
+        else{
+            ll l, r;
+            cin>>l>>r;
+            l--, r--, carry=0;
+            ll ans=query(1,0,n-1,l,r);
+            cout<<ans<<nl;
+        }
+    }
+    return 0;
+}

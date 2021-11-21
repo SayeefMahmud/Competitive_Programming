@@ -1,0 +1,101 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000007
+#define inf (1LL<<62)
+#define inff (1<<30)
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL)
+
+#define mxn 100000
+
+ll n, arr[mxn+5], seg[4*mxn+5], lazy[4*mxn+5]={0};
+
+void build(ll node, ll st, ll en){
+    if(st==en){
+        seg[node]=arr[st];
+        return;
+    }
+    ll mid=(st+en)/2;
+    build(2*node,st,mid);
+    build(2*node+1,mid+1,en);
+    seg[node]=seg[2*node]+seg[2*node+1];
+    return;
+}
+
+void update(ll node, ll st, ll en, ll l, ll r, ll val){
+    if(st>r orr en<l) return;
+    if(st>=l && en<=r){
+        seg[node]+=(en-st+1)*val;
+        lazy[node]+=val;
+        return;
+    }
+    ll mid=(st+en)/2;
+    update(2*node,st,mid,l,r,val);
+    update(2*node+1,mid+1,en,l,r,val);
+    seg[node]=seg[2*node]+seg[2*node+1]+(en-st+1)*lazy[node];
+    return;
+}
+
+ll query(ll node, ll st, ll en, ll l, ll r, ll carry){
+    if(st>r orr en<l) return 0;
+    if(st>=l && en<=r){
+        return (en-st+1)*carry+seg[node];
+    }
+    ll mid=(st+en)/2;
+    ll q1=query(2*node,st,mid,l,r,carry+lazy[node]);
+    ll q2=query(2*node+1,mid+1,en,l,r,carry+lazy[node]);
+    return q1+q2;
+}
+
+string a;
+ll q;
+
+int main(){
+    fastio;
+    int t, cnt=1;
+    cin>>t;
+    while(t--){
+        cout<<"Case "<<cnt++<<":\n";
+        cin>>a;
+        n = a.size();
+        fr(n+5) arr[i]=0;
+        fr(4*n+3) lazy[i]=0;
+        build(1,0,n-1);
+        cin>>q;
+        while(q--){
+            char c;
+            cin>>c;
+            if(c=='I'){
+                ll aa, b;
+                cin>>aa>>b;
+                --aa, --b;
+                update(1,0,n-1,aa,b,1);
+            }
+            else{
+                ll aa;
+                cin>>aa;
+                --aa;
+                ll val = query(1,0,n-1,aa,aa,0);
+                ll tmp=a[aa]-'0';
+                tmp=(val&1)?(tmp^1):tmp;
+                cout<<tmp<<nl;
+            }
+        }
+    }
+    return 0;
+}

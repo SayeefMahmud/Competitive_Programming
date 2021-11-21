@@ -1,0 +1,18 @@
+ll n=10000000;
+bitset<10000005>keep;
+vector<ll>arr;
+
+void sieve(){
+    for(ll i=3; i*i<=n; i+=2){
+        if(!keep[i]){
+            for(ll j=i*i; j<=n; j+=2*i){
+                keep[j]=1;
+            }
+        }
+        
+    }
+    arr.pb(2);
+    for(ll i=3; i<=n; i+=2){
+        if(!keep[i]) arr.pb(i);
+    }
+}

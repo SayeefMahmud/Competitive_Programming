@@ -1,0 +1,52 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000007
+#define inf (1LL<<62)
+#define inff (1<<30)
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL)
+
+ll n, k, a, b;
+vector<ll>v;
+
+ll solve(ll l, ll r){
+    ll in1=lower_bound(v.begin(), v.end(), l)-v.begin();
+    ll in2=upper_bound(v.begin(), v.end(), r)-v.begin();
+    if(l==r){
+        if(in2-in1) return b*(in2-in1);
+        return a;
+    }
+    if(in2-in1==0) return a;
+    ll res=solve(l,(l+r)/2)+solve(((l+r)/2)+1,r);
+    return min(b*(in2-in1)*(r-l+1),res);
+}
+
+int main()
+{
+    fastio;
+    cin>>n>>k>>a>>b;
+    fr(k){
+        ll t1;
+        cin>>t1;
+        v.pb(t1);
+    }
+    sort(v.begin(),v.end());
+    ll ans=solve(1LL,(1LL<<n));
+    cout<<ans<<nl;
+    return 0;
+}

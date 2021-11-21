@@ -1,0 +1,98 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000007
+#define inf (1LL<<62)
+#define inff (1<<30)
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL)
+
+string s;
+ll n, m1=1e9+7, m2=1e9+9, p1=29, p2=31;
+ll m1inv=758620695, m2inv=838709685, prime1[1000005], prime2[1000005];
+pair<ll,ll>prefhash[1000005], suffhash[1000005];
+
+void getprimes(){
+	prime1[0]=1, prime2[0]=1;
+	for(int i=1; i<n+3; i++){
+		prime1[i]=(prime1[i-1]*p1)%m1;
+    	prime2[i]=(prime2[i-1]*p2)%m2;
+	}
+}
+
+void forhash(){
+	ll hash1=0, hash2=0;
+	for(int i=0; i<n; i++){
+		hash1=(hash1+((s[i]-'a'+1)*prime1[i])%m1)%m1;
+		hash2=(hash2+((s[i]-'a'+1)*prime2[i])%m2)%m2;
+		prefhash[i]={hash1,hash2};
+	}
+}
+
+void revhash(){
+	ll hash1=prefhash[n-1].ff, hash2=prefhash[n-1].ss;
+	suffhash[0]=prefhash[n-1];
+	for(int i=1; i<n; i++){
+		hash1=(hash1-(s[i-1]-'a'+1)+m1)%m1;
+		hash1=(hash1*m1inv)%m1;
+		hash2=(hash2-(s[i-1]-'a'+1)+m2)%m2;
+		hash2=(hash2*m2inv)%m2;
+		suffhash[i]={hash1,hash2};
+	}
+}
+
+int main()
+{
+	fastio;
+    cin>>s;
+    n = s.size();
+    getprimes();
+    forhash();
+    revhash();
+    ll l=0, r=n-2, ans=-inf;
+    while(l<=r){
+    	ll mid = (l + r) / 2;
+    	pair<ll,ll> h1=prefhash[mid];
+    	ll thash1=h1.ff, thash2=h1.ss, f=0;
+    	for(int i=mid+1; i<n-1; i++){
+    		thash1=(thash1-(s[i-(mid+1)]-'a'+1)+m1)%m1;
+			thash1=(thash1*m1inv)%m1;
+			thash2=(thash2-(s[i-(mid+1)]-'a'+1)+m2)%m2;
+			thash2=(thash2*m2inv)%m2;
+
+			thash1=(thash1+((s[i]-'a'+1)*prime1[mid])%m1)%m1;
+			thash2=(thash2+((s[i]-'a'+1)*prime2[mid])%m2)%m2;
+			if(thash1==h1.ff && thash2==h1.ss){
+				f=1; break;
+			}
+    	}
+    	if(f) l=mid+1, ans=max(ans,mid);
+    	else r=mid-1;
+    }
+    if(ans==-inf) cout<<"Just a legend"<<nl;
+    else{
+    	ll ans2=-inf;
+    	for(int i=0; i<=ans; i++){
+    		if(prefhash[i].ff==suffhash[n-i-1].ff && prefhash[i].ss==suffhash[n-i-1].ss){
+    			ans2=i;
+    		}
+    	}
+    	if(ans2==-inf) cout<<"Just a legend"<<nl;
+    	else cout<<s.substr(0,ans2+1)<<nl;
+    }
+    return 0;
+}

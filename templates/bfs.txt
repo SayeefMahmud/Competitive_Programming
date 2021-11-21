@@ -1,0 +1,69 @@
+#include<iostream>
+#include<queue>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define orr ||
+#define nl printf("\n")
+#define sci(n) scanf("%lld ", &n)
+#define scl(n) scanf("%lld", &n)
+#define pri(n) printf("%d", n)
+#define prl(n) printf("%lld", n)
+#define prc(n) printf("%c", n)
+#define prs printf(" ")
+#define yes cout<<"YES"<<endl
+#define no cout<<"NO"<<endl
+#define inp freopen("input.txt", "r", stdin)
+#define outp freopen("output.txt", "w", stdout)
+#define debug(arr,n) for(int i=0; i<n; i++) printf("%lld ", arr[i])
+#define debugr(arr,s,e) for(int i=s; i<=e; i++) printf("%lld ", arr[i])
+
+vector<ll>vec[200];
+
+ll bfs(ll node){
+    ll color[200]={0},visit[200]={0};
+    queue<ll>q;
+    q.push(node);
+    color[node]=1;
+    while(!q.empty()){
+        ll f=q.front();
+        q.pop();
+        ll col=color[f]==1?2:1;
+        ll len=vec[f].size();
+        fr(len){
+            node=vec[f][i];
+            if(color[node]==color[f]) return 0;
+            if(!visit[node]){
+                q.push(node);
+                color[node]=col;
+                visit[node]=1;
+            }
+        }
+    }
+    return 1;
+}
+
+int main()
+{
+    while(1){
+        ll n,l;
+        cin>>n;
+        if(!n) break;
+        cin>>l;
+        fr(l){
+            ll n1,n2;
+            scanf("%lld%lld", &n1, &n2);
+            vec[n1].pb(n2);
+            vec[n2].pb(n1);
+        }
+        if(bfs(0)) cout<<"BICOLORABLE."<<endl;
+        else cout<<"NOT BICOLORABLE."<<endl;
+        fr(n) vec[i].clear();
+    }
+    return 0;
+}
