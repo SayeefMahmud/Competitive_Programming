@@ -1,0 +1,29 @@
+struct TRIE{
+    vector<vector<int>>trie;
+    vector<int>endshere;
+    int num;
+    void init(){
+        trie.clear(), endshere.clear(), num=0;
+        trie.pb(vector<int>(2)), endshere.pb(0);
+    }
+    void addElement(string s){
+        int node=0;
+        for(char c : s){
+            int ch=c-45;
+            if(!trie[node][ch]){
+                trie.pb(vector<int>(2)), endshere.pb(0);
+                trie[node][ch]=++num;
+            }
+            node=trie[node][ch];
+        }
+        endshere[node]++;
+    }
+    void traverse(int node, string pref){
+        if(endshere[node]) cout<<"pref "<<pref<<nl;
+        fr(2){
+            if(trie[node][i]){
+                traverse(trie[node][i],pref+char(45+i));
+            }
+        }
+    }
+};
