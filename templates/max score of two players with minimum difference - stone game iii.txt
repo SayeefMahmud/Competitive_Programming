@@ -1,0 +1,44 @@
+#define inf (1<<30)
+class Solution {
+    vector<int>arr;
+    int dp[50005][2];
+    int n;
+public:
+    int solve(int in, int par){
+        if(in==n) return 0;
+        if(dp[in][par]!=-1) return dp[in][par];
+        int res, val;
+        if(par) res=inf;
+        else res=-inf;
+        
+        val=(par==1)?-arr[in]:arr[in];
+        if(par) res=min(res,val+solve(in+1,par^1));
+        else res=max(res,val+solve(in+1,par^1));
+        
+        if(in+1<n){
+            val=(par==1)?-(arr[in+1]+arr[in]):                                                 (arr[in+1]+arr[in]);
+            if(par) res=min(res,val+solve(in+2,par^1));
+            else res=max(res,val+solve(in+2,par^1));
+        }
+        if(in+2<n){
+            val=(par==1)?-(arr[in+1]+arr[in+2]+arr[in]):                                       (arr[in+1]+arr[in+2]+arr[in]);
+            if(in==0) cout<<"val "<<val<<endl;
+            if(par) res=min(res,val+solve(in+3,par^1));
+            else res=max(res,val+solve(in+3,par^1));
+        }
+        if(in==3 && par==1) cout<<"res "<<res<<endl;
+        return dp[in][par]=res;
+    }
+    string stoneGameIII(vector<int>& stoneValue) {
+        for(int a : stoneValue){
+            arr.push_back(a);
+        }
+        n=stoneValue.size();
+        memset(dp, -1, sizeof(dp[0]) * (n+5) );
+        int dif=solve(0,0);
+        cout<<dif<<endl;
+        if(!dif) return "Tie";
+        else if(dif>0) return "Alice";
+        return "Bob";
+    }
+};
