@@ -1,0 +1,40 @@
+#define mxn 500005
+
+ll prime1[mxn], prime2[mxn], base1=29, base2=31;
+ll mod1=1000000007, mod2=1000000009;
+
+void getprimes(){
+    prime1[0]=prime2[0]=1;
+    fro(mxn){
+        prime1[i]=(prime1[i-1]*base1)%mod1;
+        prime2[i]=(prime2[i-1]*base2)%mod2;
+    }
+}
+
+struct Hash{
+    vector<ll>hash1,hash2;
+    ll n;
+    string s;
+    void init(string _s){
+        s=_s;
+        n=s.size();
+        hash1.resize(n+2);
+        hash2.resize(n+2);
+        hash1[0]=hash2[0]=0;
+        fro(n){
+            hash1[i]=(hash1[i-1]+((s[i]-'a'+1)*prime1[i])%mod1)%mod1;
+            hash2[i]=(hash2[i-1]+((s[i]-'a'+1)*prime2[i])%mod2)%mod2;
+        }
+    }
+    ll hashval(int l, int r){
+        ll h1=((hash1[r]-hash1[l-1])%mod1+mod1)%mod1;
+        h1=(h1*prime1[mxn-l-1])%mod1;
+        ll h2=((hash2[r]-hash2[l-1])%mod2+mod2)%mod2;
+        h2=(h2*prime2[mxn-l-1])%mod2;
+        return (h1<<32)|h2;
+    }
+};
+
+//getprimes();
+//Hash h[n];
+//h[i].init(s[i]); 1 based -> "$abc"
