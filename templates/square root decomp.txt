@@ -1,0 +1,75 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000007
+#define inf (1LL<<61)
+#define inff (1<<30)
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define all(v) v.begin(), v.end()
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL)
+#define mxn 300005
+#define bucket 548
+
+int n, m;
+ll u, arr[mxn], b[mxn];
+
+inline void build(){
+    for(int i=0; i<n; i+=bucket){
+        for(int j=i; j<min(n,i+bucket); j++){
+            b[j]=arr[j];
+        }
+        sort(b+i,b+min(n,i+bucket));
+    }
+}
+
+inline int query(int l, int r, ll v){
+    int st=min(r+1,((l+bucket-1)/bucket)*bucket), en=st, res=0;
+    for(int j=st; j+bucket-1<=r; j+=bucket){
+        en=j+bucket;
+        res+=lower_bound(b+j,b+en,v)-(b+j);
+    }
+    //[l,st-1] & [en,r] baki
+    for(int j=l; j<st; j++) res+=arr[j]<v;
+    for(int j=en; j<=r; j++) res+=arr[j]<v;
+    return res;
+}
+
+inline void update(int l, int r, int in, int k){
+    arr[in]=(u*k)/(r-l+1);
+    int block=in/bucket;
+    for(int j=block*bucket; j<min(n,(block+1)*bucket); j++)
+        b[j]=arr[j];
+    sort(b+block*bucket,b+min(n,(block+1)*bucket));
+}
+
+int main()
+{
+    fastio;
+    cin>>n>>m>>u;
+    fr(n) cin>>arr[i];
+    build();
+    fr(m){
+        int l, r, p;
+        ll v;
+        cin>>l>>r>>v>>p;
+        l--, r--, p--;
+        int k=query(l,r,v);
+        update(l,r,p,k);
+    }
+    fr(n) cout<<arr[i]<<nl;
+    return 0;
+}
