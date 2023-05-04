@@ -1,0 +1,75 @@
+//problem: https://www.spoj.com/problems/DQUERY/en/
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000007
+#define inf (1LL<<61)
+#define inff (1<<30)
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define all(v) v.begin(), v.end()
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL)
+#define mxn 30005
+#define bucket 174
+
+//keep bucket const for better runtime
+
+struct query{
+    int l, r, ind;
+    ll k;
+}qs[200005];
+
+int n, q, ans[200005];
+int freq[1000005];
+int arr[mxn], c=0;
+
+void add(int ind){
+    freq[arr[ind]]++;
+    if(freq[arr[ind]]==1) c++;
+}
+
+void rem(int ind){
+    freq[arr[ind]]--;
+    if(freq[arr[ind]]==0) c--;
+}
+
+int main()
+{
+    fastio;
+    cin>>n;
+    fr(n) cin>>arr[i];
+    cin>>q;
+    fr(q){
+        cin>>qs[i].l>>qs[i].r, qs[i].ind=i;
+        qs[i].l--, qs[i].r--;
+    }
+    sort(qs,qs+q,[](query a, query b){
+        if(a.l/bucket!=b.l/bucket) return a.l<b.l;
+        return (a.l/bucket&1)?(a.r>b.r):(a.r<b.r);
+    });
+    int l=0, r=0;
+    fr(q){
+        while(r<=qs[i].r) add(r++);
+        while(r-1>qs[i].r) rem(--r);
+        while(l<qs[i].l) rem(l++);
+        while(l>qs[i].l) add(--l);
+        ans[qs[i].ind]=c;
+    }
+    fr(q){
+        cout<<ans[i]<<nl;
+    }
+    return 0;
+}
