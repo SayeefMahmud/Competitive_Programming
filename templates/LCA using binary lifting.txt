@@ -1,0 +1,29 @@
+void binarylift(){
+    for(int i=1; i<=18; i++){
+        for(int j=1; j<=n; j++){
+            if(depth[j]>=(1<<i)){
+                ancestor[j][i]=ancestor[ancestor[j][i-1]][i-1];
+            }
+        }
+    }
+}
+
+int findlca(int a, int b){
+    if(a==b) return a;
+    if(depth[a]>depth[b]) swap(a,b);
+    int k=depth[b]-depth[a];
+    frr(18){
+        if(k&(1<<i)){
+            b=ancestor[b][i];
+        }
+    }
+    if(a!=b){
+        frr(17){
+            if(depth[a]>=(1<<i) && ancestor[a][i]!=ancestor[b][i]){
+                a=ancestor[a][i], b=ancestor[b][i];
+            }
+        }
+        a=ancestor[a][0];
+    }
+    return a;
+}
