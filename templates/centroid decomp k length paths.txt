@@ -1,0 +1,101 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000007
+#define inf (1LL<<62)
+#define inff (1<<30)
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define all(v) v.begin(), v.end()
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL)
+#define mxn 100005
+
+vector<int>g[mxn];
+int n, k, sub[mxn]={}, iscentroid[mxn]={};
+int parcentroid[mxn]={}, f=1;
+ll ans=0, cnt[mxn]={};
+
+int dfs(int node, int par, int dep, int start){
+    sub[node]=1;
+    for(int a : g[node]){
+        if(a!=par && !iscentroid[a]) sub[node]+=dfs(a,node,dep+1,start);
+    }
+    return sub[node];
+}
+
+int getCentroid(int node, int par, int n){
+    for(int a : g[node]){
+        if(a!=par && !iscentroid[a] && sub[a]>n/2) return getCentroid(a, node, n);
+    }
+    return node;
+}
+
+void dfs2(int node, int par, int dep, int parity){
+    if(parity==1) cnt[dep]++;
+    else if(parity==0) cnt[dep]--;
+    else{
+        if(k-dep>0) ans+=cnt[k-dep];
+        if(k==dep) ans+=2;
+    }
+    for(int a : g[node]){
+        if(a!=par && !iscentroid[a]){
+            dfs2(a,node,dep+1,parity);
+        }
+    }
+}
+
+void decompose(int node, int par, int parentcentroid){
+    int n=dfs(node,par,0,node), centroid=getCentroid(node, par, n);
+    for(int a : g[centroid]){
+        if(!iscentroid[a]){
+            dfs2(a,centroid,1,1);
+        }
+    }
+    for(int a : g[centroid]){
+        if(!iscentroid[a]){
+            dfs2(a,centroid,1,0);
+            dfs2(a,centroid,1,2);
+            dfs2(a,centroid,1,1);
+        }
+    }
+    for(int a : g[centroid]){
+        if(!iscentroid[a]){
+            dfs2(a,centroid,1,0);
+        }
+    }
+    iscentroid[centroid]=1;
+    // if(parentcentroid!=-1){
+    //     parcentroid[centroid]=parentcentroid;
+    // }
+    for(int a : g[centroid]){
+        if(a!=par && !iscentroid[a]) decompose(a,centroid,centroid);
+    }
+}
+
+int main()
+{
+    fastio;
+    cin>>n>>k;
+    fr(n-1){
+        int a, b;
+        cin>>a>>b;
+        g[a].pb(b);
+        g[b].pb(a);
+    }
+    decompose(1,-1,-1);
+    cout<<ans/2<<nl;
+    return 0;
+}
