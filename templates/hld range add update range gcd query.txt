@@ -1,0 +1,171 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000007
+#define inf (1LL<<62)
+#define inff (1<<30)
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define all(v) v.begin(), v.end()
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL)
+#define mxn 50005
+
+vector<int>g[mxn];
+int n, q;
+int val[mxn], sub[mxn], dep[mxn], par[mxn];
+int idx=0, head[mxn];
+int in[mxn], pos[mxn];
+int from, to, seg2[4*mxn];
+int bit[mxn]={};
+
+inline int gcd(int a, int b){
+    if(b==0) return (a>0)?a:-a;
+    return gcd(b,a%b);
+}
+
+inline void update(int in, int val){
+    in++;
+    for(; in<mxn; in+=in&-in) bit[in]+=val;
+}
+
+inline int query(int in){
+    in++;
+    int res=0;
+    for(; in>0; in-=in&-in) res+=bit[in];
+    return res;
+}
+
+inline void build2(int node=1, int st=from, int en=to-1){
+    if(st==en){
+        seg2[node]=val[pos[st]]-val[pos[st+1]];
+        return;
+    }
+    int mid=(st+en)>>1;
+    build2(node<<1,st,mid);
+    build2(node<<1|1,mid+1,en);
+    seg2[node]=gcd(seg2[node<<1],seg2[node<<1|1]);
+}
+
+inline void update2(int in, int val, int node=1, int st=from, int en=to-1){
+    if(st==en){
+        seg2[node]+=val;
+        return;
+    }
+    int mid=(st+en)>>1;
+    if(in<=mid) update2(in,val,node<<1,st,mid);
+    else update2(in,val,node<<1|1,mid+1,en);
+    seg2[node]=gcd(seg2[node<<1],seg2[node<<1|1]);
+}
+
+inline int query2(int l, int r, int node=1, int st=from, int en=to-1){
+    if(l>r || l>en || r<st) return 0;
+    if(l<=st && en<=r) return seg2[node];
+    int mid=(st+en)>>1;
+    return gcd(query2(l,r,node<<1,st,mid),query2(l,r,node<<1|1,mid+1,en));
+}
+
+inline void dfs(int node, int p, int d=0){
+    dep[node]=d, par[node]=p;
+    sub[node]=1;
+    for(int &a : g[node]){
+        if(a-p){
+            dfs(a,node,d+1);
+            sub[node]+=sub[a];
+            if(sub[g[node][0]]<=sub[a]) swap(a,g[node][0]);
+        }
+    }
+}
+
+inline void dfshld(int node, int p){
+    if(p==-1) head[node]=node;
+    in[node]=idx;
+    pos[idx++]=node;
+    for(int &a : g[node]){
+        if(a-p){
+            head[a]=(a==g[node][0])?head[node]:a;
+            dfshld(a,node);
+        }
+    }
+}
+
+inline void updatehld(int a, int b, int d){
+    while(head[a]!=head[b]){
+        if(dep[head[a]]>dep[head[b]]) swap(a,b);
+        int l=in[head[b]], r=in[b];
+        if(l!=0) update2(l-1,-d);
+        if(r!=n-1) update2(r,d);
+        update(l,d);
+        update(r+1,-d);
+        b=par[head[b]];
+    }
+    if(dep[a]>dep[b]) swap(a,b);
+    int l=in[a], r=in[b];
+    if(l!=0) update2(l-1,-d);
+    if(r!=n-1) update2(r,d);
+    update(l,d);
+    update(r+1,-d);
+}
+
+inline int queryhld(int a, int b){
+    int g=0;
+    while(head[a]!=head[b]){
+        if(dep[head[a]]>dep[head[b]]) swap(a,b);
+        int l=in[head[b]], r=in[b];
+        g=gcd(g,query2(l,r-1));
+        int tmp=val[b]+query(in[b]);
+        g=gcd(g,tmp);
+        b=par[head[b]];
+    }
+    if(dep[a]>dep[b]) swap(a,b);
+    int l=in[a], r=in[b];
+    g=gcd(g,query2(l,r-1));
+    int tmp=val[b]+query(in[b]);
+    g=gcd(g,tmp);
+    return g;
+}
+
+int main()
+{
+    fastio;
+    cin>>n;
+    fr(n-1){
+        int a, b;
+        cin>>a>>b;
+        g[a].pb(b);
+        g[b].pb(a);
+    }
+    fr(n) cin>>val[i];
+    dfs(0,-1);
+    dfshld(0,-1);
+    from=0, to=n-1;
+    build2();
+    cin>>q;
+    while(q--){
+        char c;
+        cin>>c;
+        if(c=='F'){
+            int u, v;
+            cin>>u>>v;
+            cout<<queryhld(u,v)<<nl;
+        }
+        else{
+            int u, v, d;
+            cin>>u>>v>>d;
+            updatehld(u,v,d);
+        }
+    }
+    return 0;
+}

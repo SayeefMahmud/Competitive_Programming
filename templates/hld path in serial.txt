@@ -1,0 +1,194 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long
+#define fr(m) for(int i=0; i<m; i++)
+#define fro(m) for(int i=1; i<m; i++)
+#define frj(m) for(int j=0; j<m; j++)
+#define frr(n) for(int i=n; i>=0; i--)
+#define pb push_back
+#define pf push_front
+#define orr ||
+#define nl '\n'
+#define nll cout<<'\n'
+#define mod 1000000007
+#define inf (1LL<<61)
+#define inff (1<<30)
+#define yes cout<<"YES"<<nl
+#define no cout<<"NO"<<nl
+#define ff first
+#define ss second
+#define all(v) v.begin(), v.end()
+#define fastio ios_base::sync_with_stdio(false); cin.tie(NULL)
+#define mxn 200005
+
+struct tp{
+    ll u, v, x;
+};
+
+struct tp2{
+    ll mnsuff, mxsuff, mnpref, mxpref, mn, mx, sum;
+};
+
+ll n, val[mxn];
+vector<ll>g[mxn];
+vector<tp>qs;
+
+int sub[mxn], dep[mxn], par[mxn];
+int idx=0, head[mxn];
+int in[mxn], out[mxn], pos[mxn];
+tp2 seg[4*mxn];
+
+tp2 merge(tp2 a, tp2 b){
+    if(a.mnsuff==-inff) return b;
+    if(b.mnsuff==-inff) return a;
+    tp2 c;
+    c.mnpref=min(a.mnpref,a.sum+b.mnpref);
+    c.mnsuff=min(b.mnsuff,b.sum+a.mnsuff);
+    c.mxpref=max(a.mxpref,a.sum+b.mxpref);
+    c.mxsuff=max(b.mxsuff,b.sum+a.mxsuff);
+    c.sum=a.sum+b.sum;
+    c.mn=min({a.mn,b.mn,a.mnsuff+b.mnpref});
+    c.mx=max({a.mx,b.mx,a.mxsuff+b.mxpref});
+    return c;
+}
+
+inline void build(int node, int st, int en){
+    if(st==en){
+        seg[node].mnsuff=min(val[pos[st]],0ll);
+        seg[node].mnpref=min(val[pos[st]],0ll);
+        seg[node].mn=min(val[pos[st]],0ll);
+        seg[node].mxsuff=max(val[pos[st]],0ll);
+        seg[node].mxpref=max(val[pos[st]],0ll);
+        seg[node].mx=max(val[pos[st]],0ll);
+        seg[node].sum=val[pos[st]];
+        return;
+    }
+    int mid=(st+en)>>1;
+    build(node<<1,st,mid);
+    build(node<<1|1,mid+1,en);
+    seg[node]=merge(seg[node<<1],seg[node<<1|1]);
+}
+
+inline tp2 query(int node, int st, int en, int l, int r){
+    if(st>r || en<l) return {-inff,0,0,0,0,0,0};
+    if(st>=l && en<=r) return seg[node];
+    int mid=(st+en)>>1;
+    tp2 a=query(node<<1,st,mid,l,r), b=query(node<<1|1,mid+1,en,l,r);
+    tp2 c=merge(a,b);
+    return c;
+}
+
+inline void dfs(int node, int p, int d=0){
+    dep[node]=d, par[node]=p;
+    sub[node]=1;
+    for(ll &a : g[node]){
+        if(a-p){
+            dfs(a,node,d+1);
+            sub[node]+=sub[a];
+            if(sub[g[node][0]]<=sub[a]) swap(a,g[node][0]);
+        }
+    }
+}
+
+inline void dfshld(int node, int p){
+    if(p==-1) head[node]=node;
+    in[node]=idx;
+    pos[idx++]=node;
+    for(ll &a : g[node]){
+        if(a-p){
+            head[a]=(a==g[node][0])?head[node]:a;
+            dfshld(a,node);
+        }
+    }
+    out[node]=idx;
+}
+
+inline int lca(int a, int b){
+    while(head[a]!=head[b]){
+        if(dep[head[a]]>dep[head[b]]) swap(a,b);
+        b=par[head[b]];
+    }
+    if(dep[a]>dep[b]) swap(a,b);
+    return a;
+}
+
+inline bool isAncestor(int p,int u){
+    return in[p]<=in[u]&&out[p]>=out[u];
+}
+
+tp2 query_path_in_serial(ll u, ll v)
+{
+    tp2 res1={-inff,0,0,0,0,0,0}, res2={-inff,0,0,0,0,0,0};
+    while(!isAncestor(head[u],v)) {
+        int l=in[head[u]], r=in[u];
+        res1=merge(query(1,0,idx,l,r),res1);
+        u=par[head[u]];
+    }
+    //u->par[head[u]]->par[head[par[head[u]]]]...
+    int f=0;
+    if(isAncestor(u,v)) f=1;
+    swap(u,v);
+    while(!isAncestor(head[u],v)) {
+        int l=in[head[u]], r=in[u];
+        res2=merge(query(1,0,idx,l,r),res2);
+        u=par[head[u]];
+    }
+    //v->par[head[v]]->par[head[par[head[v]]]]...
+    if(in[v]<in[u]) swap(u,v);
+    tp2 tmp=query(1,0,idx,in[u],in[v]);
+    if(!f) res1=merge(tmp,res1);
+    else res2=merge(tmp,res2);
+    //based on f, merge with u or v
+    swap(res1.mxpref,res1.mxsuff);
+    swap(res1.mnpref,res1.mnsuff);
+    return merge(res1,res2);
+}
+
+int main()
+{
+    fastio;
+    int t, cnt=1;
+    cin>>t;
+    while(t--){
+        cin>>n;
+        fr(n+2) g[i].clear();
+        qs.clear();
+        ll node=1;
+        val[1]=1;
+        fr(n){
+            char c;
+            cin>>c;
+            if(c=='+'){
+                node++;
+                ll v, x;
+                cin>>v>>x;
+                g[v].pb(node);
+                val[node]=x;
+            }
+            else{
+                ll u, v, k;
+                cin>>u>>v>>k;
+                qs.pb({u,v,k});
+            }
+        }
+        idx=0;
+        dfs(1,-1);
+        dfshld(1,-1);
+        build(1,0,idx);
+        for(tp a : qs){
+            tp2 now=query_path_in_serial(a.u,a.v);
+            if(a.x==0) yes;
+            else if(a.x>0){
+                if(now.mx>=a.x) yes;
+                else no;
+            }
+            else{
+                if(abs(now.mn)>=abs(a.x)) yes;
+                else no;
+            }
+        }
+    }
+    return 0;
+}
